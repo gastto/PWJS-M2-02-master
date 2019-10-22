@@ -1,10 +1,11 @@
 class Producto {
   //Constructor
-  constructor(n, s, p, d = true){
+  constructor(n, s, p, i, d = true){
     //Atributos
     this.nombre = n
     this.stock = s
     this.precio = p
+    this.imagen = i
     this.disponible = d //<-- Por default asigna "true"
   }
 
@@ -23,26 +24,32 @@ class Producto {
 
   }
 
-  set Disponible(value){
+  // set Disponible(value){
 
-    if( value == this.disponible ){
-      alert("La disponibilidad ya está en: " + value)
-      return
-    }
+  //   if( value == this.disponible ){
+  //     return
+  //   }
 
-    let estado = value ? "habilitar" : "deshabilitar"
+  //   let estado = value ? "habilitar" : "deshabilitar"
 
-    if( confirm(`Desea ${estado} el producto "${this.nombre}"`) ){
-      this.disponible = value
-    }
+  //   if( confirm(`Desea ${estado} el producto "${this.nombre}"`) ){
+  //     this.disponible = value
+  //   }
 
-  }
+  // }
 
   //Metodos de Instancia
   Mostrar(){
-    let color = this.disponible ? "green" : "red"
+    let ficha = document.querySelector(".producto").cloneNode(true)
 
-    document.write(`<p style="color:${color}">Hay <strong>${this.stock}</strong> unid. de <strong>${this.nombre}</strong> que valen <em>ARG${this.precio}</em> c/u</p>`)
+    ficha.querySelector(".card-title a").innerText = this.nombre
+    ficha.querySelector(".card-body h5").innerText = this.Precio
+    ficha.querySelector(".card-img-top").src = this.imagen
+
+    ficha.classList.remove("d-none")
+
+    document.querySelector("#productos-destacados").appendChild( ficha )
+
   }
 
   aplicarDescuento(valor){
@@ -62,25 +69,16 @@ class Producto {
     if( datos instanceof Array ){
 
       //1) Crear un Array nuevo para guardar los objetos Producto
-      let productos = new Array()
 
       //2) Recorrer el Array de Object para instanciar objetos Producto
-      datos.forEach(item => {
-        
-        //3) Instanciar un objeto Producto con los datos de cada Object
-        let producto = new Producto(item.nombre, item.stock, item.precio, item.disponible)
-        
-        //4) Guardar el objeto Producto instanciado en el Array nuevo
-        productos.push(producto)
-        
-      })
+      return datos.map(item => new Producto(item.Nombre, item.Stock, item.Precio, item.Imagen))
+
       //5) Retornar el Array nuevo una vez que se hayan instanciado todos los objetos Producto
-      return productos
 
     } else if( datos instanceof Object ){
 
-      let producto = new Producto(datos.nombre, datos.stock, datos.precio, datos.disponible)
-      return producto
+      return new Producto(datos.Nombre, datos.Stock, datos.Precio, datos.Imagen)
+
 
     } else {
       console.error("Ya fue... no convierto nada en Producto")
