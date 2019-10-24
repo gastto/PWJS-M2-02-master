@@ -62,12 +62,28 @@
 			// let unaSimplePrueba = new Producto("Prueba", 400,12,false)
 			// console.log(unaSimplePrueba)
 
+			// Persistencia en Javascript con la API Storage
+			// window.localStorage && window.sessionStorage //
+
+			// window.localStorage.setItem( "USUARIOS" , "Acá voy a guardar datos de productos" )
+			// alert(window.localStorage.getItem("PRODUCTOS"))
+			// window.localStorage.removeItem("USUARIOS")
+			// window.localStorage.clear()
+
+			// API HTML 5
+
+			/////////////////////////////////////////////////////////
+
 			const miniFirefox = new XMLHttpRequest()
 			miniFirefox.open("GET", "https://api.myjson.com/bins/dcg2p")
 
 			miniFirefox.onload = function(){ //<-- Petición exitosa!
 
 			if( this.status == 200 ){ //<-- Respuesta exitosa!
+
+				//Guardar los datos de la petición
+				window.localStorage.setItem("PRODUCTOS", this.response)
+
 				let productos = Producto.parse(this.response) //<-- de JSON a Producto
 
 				productos.forEach(producto => {
