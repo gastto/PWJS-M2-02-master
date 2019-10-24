@@ -73,29 +73,63 @@
 			// API HTML 5
 
 			/////////////////////////////////////////////////////////
+			const promesa = new Promise(function(ok, error){
+				let numero = Math.random()
 
-			const miniFirefox = new XMLHttpRequest()
-			miniFirefox.open("GET", "https://api.myjson.com/bins/dcg2p")
-
-			miniFirefox.onload = function(){ //<-- Petición exitosa!
-
-			if( this.status == 200 ){ //<-- Respuesta exitosa!
-
-				//Guardar los datos de la petición
-				window.localStorage.setItem("PRODUCTOS", this.response)
-
-				let productos = Producto.parse(this.response) //<-- de JSON a Producto
-
-				productos.forEach(producto => {
-					
-					producto.Mostrar()
+				window.setTimeout( function(){
+					if( numero < 0.5 ){
+						ok(`${numero} vale menos que 0.5`)
+					} else {
+						error(`${numero} vale más que 0.5`)
+					}
+				}, 5000) // <-- Despues de x segundos
+			})
+			promesa.then(function(rta){ // <-- esto ocurre cuando sale bien 
+				alert(`${rta} "estas dentro del método then"`)
 			})
 
+			promesa.catch(function(rta){ // <-- esto ocurre cuando sale mal
+				alert(`${rta} "estas dentro del método catch"`)
+			}) 
+
+			promesa.finally(function(){
+				confirm('si o no?')
+			})
+
+			///////////////////////////////////////////////////////
+
+			if( !window.localStorage.getItem("PRODUCTOS") ){	
+
+				const miniFirefox = new XMLHttpRequest()
+				miniFirefox.open("GET", "https://api.myjson.com/bins/dcg2p")
+
+				miniFirefox.onload = function(){ //<-- Petición exitosa!
+
+					if( this.status == 200 ){ //<-- Respuesta exitosa!
+
+						//Guardar los datos de la petición
+						window.localStorage.setItem("PRODUCTOS", this.response)
+
+						let productos = Producto.parse(this.response) //<-- de JSON a Producto
+
+						productos.forEach(producto => {
+							producto.Mostrar()
+						})
+					}
+				}
+				miniFirefox.send()
+			}else{
+				// Existe un localstorage, y lo usa desde ahí
+				alert("hay un localStorage PRODUCTOS")
+
+				let productos = Producto.parse( window.localStorage.getItem("PRODUCTOS") )
+
+				productos.forEach(producto => {
+					producto.Mostrar()
+				})
 			}
 
-		}
-
-		miniFirefox.send()
+		
 			
 		</script>
 	</body>
