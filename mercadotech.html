@@ -74,22 +74,40 @@
 
 			/////////////////////////////////////////////////////////
 			const promesa = new Promise(function(ok, error){
-				let numero = Math.random()
+				
+				if( !window.localStorage.getItem("PRODUCTOS") ){	
 
-				window.setTimeout( function(){
-					if( numero < 0.5 ){
-						ok(`${numero} vale menos que 0.5`)
+				const miniFirefox = new XMLHttpRequest()
+				miniFirefox.open("GET", "https://api.myjson.com/bins/dcg2p")
+				miniFirefox.onload = function(){ //<-- Petición exitosa!
+				miniFirefox.onerror = function(){
+					error(this.statusText)
+				}
+					if( this.status == 200 ){ //<-- Respuesta exitosa!
+						//Guardar los datos de la petición
+						window.localStorage.setItem("PRODUCTOS", this.response)
+						ok( this.response ) // <-- Ejecutar método then()
 					} else {
-						error(`${numero} vale más que 0.5`)
+						this.onerror()
 					}
-				}, 5000) // <-- Despues de x segundos
+				}
+				miniFirefox.send()
+				}else{
+					// Existe un localstorage, y lo usa desde ahí
+					ok( window.localStorage.getItem("PRODUCTOS")) // <-- Ejecutar el método then()
+				}
 			})
-			promesa.then(function(rta){ // <-- esto ocurre cuando sale bien 
-				alert(`${rta} "estas dentro del método then"`)
+			promesa.then(function(rta){ // <-- esto ocurre cuando hay datos ( desde una API o de un Storage )
+				let productos = Producto.parse( rta )
+				productos.forEach(producto => {
+					producto.Mostrar()
+				})
 			})
 
 			promesa.catch(function(rta){ // <-- esto ocurre cuando sale mal
-				alert(`${rta} "estas dentro del método catch"`)
+
+				document.querySelector("#productos-destacados").innerHTML = `<div class="alert alert-danger" role="alert">${rta}</div>`
+
 			}) 
 
 			promesa.finally(function(){
@@ -98,37 +116,7 @@
 
 			///////////////////////////////////////////////////////
 
-			if( !window.localStorage.getItem("PRODUCTOS") ){	
-
-				const miniFirefox = new XMLHttpRequest()
-				miniFirefox.open("GET", "https://api.myjson.com/bins/dcg2p")
-
-				miniFirefox.onload = function(){ //<-- Petición exitosa!
-
-					if( this.status == 200 ){ //<-- Respuesta exitosa!
-
-						//Guardar los datos de la petición
-						window.localStorage.setItem("PRODUCTOS", this.response)
-
-						let productos = Producto.parse(this.response) //<-- de JSON a Producto
-
-						productos.forEach(producto => {
-							producto.Mostrar()
-						})
-					}
-				}
-				miniFirefox.send()
-			}else{
-				// Existe un localstorage, y lo usa desde ahí
-				alert("hay un localStorage PRODUCTOS")
-
-				let productos = Producto.parse( window.localStorage.getItem("PRODUCTOS") )
-
-				productos.forEach(producto => {
-					producto.Mostrar()
-				})
-			}
-
+			
 		
 			
 		</script>
